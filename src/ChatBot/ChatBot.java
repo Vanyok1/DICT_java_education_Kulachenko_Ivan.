@@ -1,5 +1,6 @@
 package ChatBot;
 
+import java.awt.desktop.SystemEventListener;
 import java.util.Scanner;
 
 public class ChatBot {
@@ -29,5 +30,26 @@ public class ChatBot {
         for (int i = 0; i <= number; i++) {
             System.out.println(i + "!");
         }
+
+        System.out.println("Choose the correct answer");
+        System.out.println("Which method of declaring a variable in Java is correct?");
+        System.out.println("1. int number;");
+        System.out.println("2. number int;");
+        System.out.println("3. integer number;");
+        System.out.println("4. num int;");
+
+        int answer;
+        do {
+            answer = Integer.parseInt(input.nextLine());
+            if (answer != 1) {
+                System.out.println("Wrong");
+            }
+        } while (answer != 1);
+
+        System.out.println("Correct");
+
+        System.out.println("Goodbye, have a nice day!");
+
+        input.close();
     }
 }
