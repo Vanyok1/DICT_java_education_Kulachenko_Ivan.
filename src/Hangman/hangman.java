@@ -17,9 +17,11 @@ public class hangman {
 
         boolean correct = false;
 
+        String hint = correctWord.substring(0, 2) + "-".repeat(correctWord.length() - 2);
+
         while (!correct) {
             System.out.println("HANGMAN");
-            System.out.println("Guess the word: > ");
+            System.out.print("Guess the word " + hint + ": > ");
             String answer = scanner.nextLine();
 
             if (answer.equalsIgnoreCase(correctWord)) {
