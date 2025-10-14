@@ -15,6 +15,7 @@ public class hangman {
         String correctWord = words[random.nextInt(words.length)];
 
         StringBuilder hint = new StringBuilder("-".repeat(correctWord.length()));
+        String guessedLetters = "";
 
         int attempts = 8;
 
@@ -23,26 +24,33 @@ public class hangman {
             System.out.print("Input a letter: > ");
             String letter = scanner.nextLine();
 
-            if (correctWord.contains(letter)) {
+            if (guessedLetters.contains(letter)) {
+                System.out.println("No improvements");
+                attempts--;
+            } else if (!correctWord.contains(letter)) {
+                System.out.println("That letter doesn't appear in the word");
+                attempts--;
+            } else {
                 for (int i = 0; i < correctWord.length(); i++) {
                     if (correctWord.charAt(i) == letter.charAt(0)) {
                         hint.setCharAt(i, letter.charAt(0));
                     }
                 }
-            } else {
-                System.out.println("That letter doesn't appear in the word");
             }
 
-            attempts--;
+            guessedLetters += letter;
 
             if (hint.toString().equals(correctWord)) {
                 System.out.println(hint);
+                System.out.println("You guessed the word!");
+                System.out.println("You survived!");
                 break;
             }
         }
 
-        System.out.println("Thanks for playing!");
-        System.out.println("We'll see how well you did in the next stage");
+        if (!hint.toString().equals(correctWord) && attempts == 0) {
+            System.out.println("You lost!");
+        }
 
         scanner.close();
     }
