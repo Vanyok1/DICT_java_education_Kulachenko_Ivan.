@@ -9,28 +9,40 @@ public class hangman {
         Random random = new Random();
 
         System.out.println("HANGMAN");
-        System.out.println("The game will be available soon.");
         System.out.println();
 
-        String [] words = {"python", "java", "javascript", "kotlin" };
+        String[] words = {"python", "java", "javascript", "kotlin"};
         String correctWord = words[random.nextInt(words.length)];
 
-        boolean correct = false;
+        StringBuilder hint = new StringBuilder("-".repeat(correctWord.length()));
 
-        String hint = correctWord.substring(0, 2) + "-".repeat(correctWord.length() - 2);
+        int attempts = 8;
 
-        while (!correct) {
-            System.out.println("HANGMAN");
-            System.out.print("Guess the word " + hint + ": > ");
-            String answer = scanner.nextLine();
+        while (attempts > 0) {
+            System.out.println(hint);
+            System.out.print("Input a letter: > ");
+            String letter = scanner.nextLine();
 
-            if (answer.equalsIgnoreCase(correctWord)) {
-                System.out.println("You survived!");
-                correct = true;
+            if (correctWord.contains(letter)) {
+                for (int i = 0; i < correctWord.length(); i++) {
+                    if (correctWord.charAt(i) == letter.charAt(0)) {
+                        hint.setCharAt(i, letter.charAt(0));
+                    }
+                }
             } else {
-                System.out.println("You lost!");
+                System.out.println("That letter doesn't appear in the word");
+            }
+
+            attempts--;
+
+            if (hint.toString().equals(correctWord)) {
+                System.out.println(hint);
+                break;
             }
         }
+
+        System.out.println("Thanks for playing!");
+        System.out.println("We'll see how well you did in the next stage");
 
         scanner.close();
     }
