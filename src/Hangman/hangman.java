@@ -24,25 +24,36 @@ public class hangman {
             System.out.print("Input a letter: > ");
             String letter = scanner.nextLine();
 
+            if (letter.length() != 1) {
+                System.out.println("You should input a single letter");
+                continue;
+            }
+
+            if (!letter.matches("[a-z]")) {
+                System.out.println("Please enter a lowercase English letter");
+                continue;
+            }
+
             if (guessedLetters.contains(letter)) {
-                System.out.println("No improvements");
-                attempts--;
-            } else if (!correctWord.contains(letter)) {
-                System.out.println("That letter doesn't appear in the word");
-                attempts--;
-            } else {
+                System.out.println("You've already guessed this letter");
+                continue;
+            }
+
+            guessedLetters += letter;
+
+            if (correctWord.contains(letter)) {
                 for (int i = 0; i < correctWord.length(); i++) {
                     if (correctWord.charAt(i) == letter.charAt(0)) {
                         hint.setCharAt(i, letter.charAt(0));
                     }
                 }
+            } else {
+                System.out.println("That letter doesn't appear in the word");
+                attempts--;
             }
 
-            guessedLetters += letter;
-
             if (hint.toString().equals(correctWord)) {
-                System.out.println(hint);
-                System.out.println("You guessed the word!");
+                System.out.println("You guessed the word " + correctWord + "!");
                 System.out.println("You survived!");
                 break;
             }
