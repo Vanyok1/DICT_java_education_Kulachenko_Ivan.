@@ -1,16 +1,19 @@
 package MatrixProcessing;
 
+import java.util.Locale;
 import java.util.Scanner;
 
 public class MatrixProcessing {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        sc.useLocale(Locale.US);
 
         while (true) {
             System.out.println("1. Add matrices");
             System.out.println("2. Multiply matrix by a constant");
             System.out.println("3. Multiply matrices");
+            System.out.println("4. Transpose matrix");
             System.out.println("0. Exit");
             System.out.print("Your choice: ");
 
@@ -82,6 +85,37 @@ public class MatrixProcessing {
                     }
                 }
 
+                case 4 -> {
+                    System.out.println("1. Main diagonal");
+                    System.out.println("2. Side diagonal");
+                    System.out.println("3. Vertical line");
+                    System.out.println("4. Horizontal line");
+                    System.out.print("Your choice: ");
+                    int type = sc.nextInt();
+
+                    System.out.print("Enter matrix size: ");
+                    int n = sc.nextInt();
+                    int m = sc.nextInt();
+                    System.out.println("Enter matrix:");
+                    double[][] data = readMatrix(sc, n, m);
+                    Matrix M = new Matrix(data);
+
+                    Matrix transposed = switch (type) {
+                        case 1 -> M.transposeMainDiagonal();
+                        case 2 -> M.transposeSideDiagonal();
+                        case 3 -> M.transposeVertical();
+                        case 4 -> M.transposeHorizontal();
+                        default -> null;
+                    };
+
+                    if (transposed == null) {
+                        System.out.println("Invalid option.");
+                    } else {
+                        System.out.println("The result is:");
+                        transposed.print();
+                    }
+                }
+
                 default -> System.out.println("Invalid option. Try again.");
             }
             System.out.println();
@@ -144,6 +178,46 @@ class Matrix {
                     sum += this.data[i][k] * other.data[k][j];
                 }
                 result[i][j] = sum;
+            }
+        }
+        return new Matrix(result);
+    }
+
+    public Matrix transposeMainDiagonal() {
+        double[][] result = new double[cols][rows];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                result[j][i] = data[i][j];
+            }
+        }
+        return new Matrix(result);
+    }
+
+    public Matrix transposeSideDiagonal() {
+        double[][] result = new double[cols][rows];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                result[cols - 1 - j][rows - 1 - i] = data[i][j];
+            }
+        }
+        return new Matrix(result);
+    }
+
+    public Matrix transposeVertical() {
+        double[][] result = new double[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                result[i][cols - 1 - j] = data[i][j];
+            }
+        }
+        return new Matrix(result);
+    }
+
+    public Matrix transposeHorizontal() {
+        double[][] result = new double[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                result[rows - 1 - i][j] = data[i][j];
             }
         }
         return new Matrix(result);
