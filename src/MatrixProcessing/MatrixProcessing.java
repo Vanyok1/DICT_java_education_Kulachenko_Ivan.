@@ -14,6 +14,7 @@ public class MatrixProcessing {
             System.out.println("2. Multiply matrix by a constant");
             System.out.println("3. Multiply matrices");
             System.out.println("4. Transpose matrix");
+            System.out.println("5. Calculate a determinant");
             System.out.println("0. Exit");
             System.out.print("Your choice: ");
 
@@ -26,23 +27,18 @@ public class MatrixProcessing {
                     int n1 = sc.nextInt();
                     int m1 = sc.nextInt();
                     System.out.println("Enter first matrix:");
-                    double[][] dataA = readMatrix(sc, n1, m1);
-                    Matrix A = new Matrix(dataA);
+                    Matrix A = new Matrix(readMatrix(sc, n1, m1));
 
                     System.out.print("Enter size of second matrix: ");
                     int n2 = sc.nextInt();
                     int m2 = sc.nextInt();
                     System.out.println("Enter second matrix:");
-                    double[][] dataB = readMatrix(sc, n2, m2);
-                    Matrix B = new Matrix(dataB);
+                    Matrix B = new Matrix(readMatrix(sc, n2, m2));
 
                     Matrix sum = A.add(B);
                     System.out.println("The result is:");
-                    if (sum == null) {
-                        System.out.println("The operation cannot be performed.");
-                    } else {
-                        sum.print();
-                    }
+                    if (sum == null) System.out.println("The operation cannot be performed.");
+                    else sum.print();
                 }
 
                 case 2 -> {
@@ -50,15 +46,14 @@ public class MatrixProcessing {
                     int n = sc.nextInt();
                     int m = sc.nextInt();
                     System.out.println("Enter matrix:");
-                    double[][] data = readMatrix(sc, n, m);
-                    Matrix M = new Matrix(data);
+                    Matrix M = new Matrix(readMatrix(sc, n, m));
 
                     System.out.print("Enter constant: ");
-                    double constant = sc.nextDouble();
+                    double c = sc.nextDouble();
 
-                    Matrix result = M.multiplyByConstant(constant);
+                    Matrix res = M.multiplyByConstant(c);
                     System.out.println("The result is:");
-                    result.print();
+                    res.print();
                 }
 
                 case 3 -> {
@@ -66,23 +61,18 @@ public class MatrixProcessing {
                     int n1 = sc.nextInt();
                     int m1 = sc.nextInt();
                     System.out.println("Enter first matrix:");
-                    double[][] dataA = readMatrix(sc, n1, m1);
-                    Matrix A = new Matrix(dataA);
+                    Matrix A = new Matrix(readMatrix(sc, n1, m1));
 
                     System.out.print("Enter size of second matrix: ");
                     int n2 = sc.nextInt();
                     int m2 = sc.nextInt();
                     System.out.println("Enter second matrix:");
-                    double[][] dataB = readMatrix(sc, n2, m2);
-                    Matrix B = new Matrix(dataB);
+                    Matrix B = new Matrix(readMatrix(sc, n2, m2));
 
-                    Matrix product = A.multiply(B);
+                    Matrix prod = A.multiply(B);
                     System.out.println("The result is:");
-                    if (product == null) {
-                        System.out.println("The operation cannot be performed.");
-                    } else {
-                        product.print();
-                    }
+                    if (prod == null) System.out.println("The operation cannot be performed.");
+                    else prod.print();
                 }
 
                 case 4 -> {
@@ -91,16 +81,15 @@ public class MatrixProcessing {
                     System.out.println("3. Vertical line");
                     System.out.println("4. Horizontal line");
                     System.out.print("Your choice: ");
-                    int type = sc.nextInt();
+                    int t = sc.nextInt();
 
                     System.out.print("Enter matrix size: ");
                     int n = sc.nextInt();
                     int m = sc.nextInt();
                     System.out.println("Enter matrix:");
-                    double[][] data = readMatrix(sc, n, m);
-                    Matrix M = new Matrix(data);
+                    Matrix M = new Matrix(readMatrix(sc, n, m));
 
-                    Matrix transposed = switch (type) {
+                    Matrix tr = switch (t) {
                         case 1 -> M.transposeMainDiagonal();
                         case 2 -> M.transposeSideDiagonal();
                         case 3 -> M.transposeVertical();
@@ -108,11 +97,27 @@ public class MatrixProcessing {
                         default -> null;
                     };
 
-                    if (transposed == null) {
-                        System.out.println("Invalid option.");
-                    } else {
+                    if (tr == null) System.out.println("Invalid option.");
+                    else {
                         System.out.println("The result is:");
-                        transposed.print();
+                        tr.print();
+                    }
+                }
+
+                case 5 -> {
+                    System.out.print("Enter matrix size: ");
+                    int n = sc.nextInt();
+                    int m = sc.nextInt();
+                    System.out.println("Enter matrix:");
+                    Matrix M = new Matrix(readMatrix(sc, n, m));
+
+                    if (n != m) {
+                        System.out.println("The operation cannot be performed.");
+                    } else {
+                        double det = M.determinant();
+                        System.out.println("The result is:");
+                        if (det == Math.floor(det)) System.out.println((int) det);
+                        else System.out.println(det);
                     }
                 }
 
@@ -123,114 +128,119 @@ public class MatrixProcessing {
     }
 
     private static double[][] readMatrix(Scanner sc, int n, int m) {
-        double[][] data = new double[n][m];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                data[i][j] = sc.nextDouble();
-            }
-        }
-        return data;
+        double[][] d = new double[n][m];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                d[i][j] = sc.nextDouble();
+        return d;
     }
 }
 
 class Matrix {
     private double[][] data;
-    private int rows;
-    private int cols;
+    private int rows, cols;
 
-    public Matrix(double[][] data) {
-        this.rows = data.length;
-        this.cols = data[0].length;
-        this.data = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            System.arraycopy(data[i], 0, this.data[i], 0, cols);
-        }
+    public Matrix(double[][] d) {
+        rows = d.length;
+        cols = d[0].length;
+        data = new double[rows][cols];
+        for (int i = 0; i < rows; i++)
+            System.arraycopy(d[i], 0, data[i], 0, cols);
     }
 
-    public Matrix add(Matrix other) {
-        if (this.rows != other.rows || this.cols != other.cols) return null;
-        double[][] result = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[i][j] = this.data[i][j] + other.data[i][j];
-            }
-        }
-        return new Matrix(result);
+    public Matrix add(Matrix o) {
+        if (rows != o.rows || cols != o.cols) return null;
+        double[][] r = new double[rows][cols];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                r[i][j] = data[i][j] + o.data[i][j];
+        return new Matrix(r);
     }
 
     public Matrix multiplyByConstant(double c) {
-        double[][] result = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[i][j] = this.data[i][j] * c;
-            }
-        }
-        return new Matrix(result);
+        double[][] r = new double[rows][cols];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                r[i][j] = data[i][j] * c;
+        return new Matrix(r);
     }
 
-    public Matrix multiply(Matrix other) {
-        if (this.cols != other.rows) return null;
-        double[][] result = new double[this.rows][other.cols];
-        for (int i = 0; i < this.rows; i++) {
-            for (int j = 0; j < other.cols; j++) {
-                double sum = 0;
-                for (int k = 0; k < this.cols; k++) {
-                    sum += this.data[i][k] * other.data[k][j];
-                }
-                result[i][j] = sum;
+    public Matrix multiply(Matrix o) {
+        if (cols != o.rows) return null;
+        double[][] r = new double[rows][o.cols];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < o.cols; j++) {
+                double s = 0;
+                for (int k = 0; k < cols; k++) s += data[i][k] * o.data[k][j];
+                r[i][j] = s;
             }
-        }
-        return new Matrix(result);
+        return new Matrix(r);
     }
 
     public Matrix transposeMainDiagonal() {
-        double[][] result = new double[cols][rows];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[j][i] = data[i][j];
-            }
-        }
-        return new Matrix(result);
+        double[][] r = new double[cols][rows];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                r[j][i] = data[i][j];
+        return new Matrix(r);
     }
 
     public Matrix transposeSideDiagonal() {
-        double[][] result = new double[cols][rows];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[cols - 1 - j][rows - 1 - i] = data[i][j];
-            }
-        }
-        return new Matrix(result);
+        double[][] r = new double[cols][rows];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                r[cols - 1 - j][rows - 1 - i] = data[i][j];
+        return new Matrix(r);
     }
 
     public Matrix transposeVertical() {
-        double[][] result = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[i][cols - 1 - j] = data[i][j];
-            }
-        }
-        return new Matrix(result);
+        double[][] r = new double[rows][cols];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                r[i][cols - 1 - j] = data[i][j];
+        return new Matrix(r);
     }
 
     public Matrix transposeHorizontal() {
-        double[][] result = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[rows - 1 - i][j] = data[i][j];
-            }
+        double[][] r = new double[rows][cols];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                r[rows - 1 - i][j] = data[i][j];
+        return new Matrix(r);
+    }
+
+    public double determinant() {
+        if (rows != cols) throw new IllegalStateException("Not a square matrix");
+        if (rows == 1) return data[0][0];
+        if (rows == 2) return data[0][0] * data[1][1] - data[0][1] * data[1][0];
+        double det = 0;
+        for (int j = 0; j < cols; j++) {
+            det += Math.pow(-1, j) * data[0][j] * minor(0, j).determinant();
         }
-        return new Matrix(result);
+        return det;
+    }
+
+    private Matrix minor(int row, int col) {
+        double[][] r = new double[rows - 1][cols - 1];
+        int rr = 0;
+        for (int i = 0; i < rows; i++) {
+            if (i == row) continue;
+            int cc = 0;
+            for (int j = 0; j < cols; j++) {
+                if (j == col) continue;
+                r[rr][cc++] = data[i][j];
+            }
+            rr++;
+        }
+        return new Matrix(r);
     }
 
     public void print() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                if (data[i][j] == Math.floor(data[i][j])) {
+                if (data[i][j] == Math.floor(data[i][j]))
                     System.out.print((int) data[i][j]);
-                } else {
-                    System.out.print(data[i][j]);
-                }
+                else System.out.print(data[i][j]);
                 if (j < cols - 1) System.out.print(" ");
             }
             System.out.println();
