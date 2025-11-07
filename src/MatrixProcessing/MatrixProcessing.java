@@ -15,6 +15,7 @@ public class MatrixProcessing {
             System.out.println("3. Multiply matrices");
             System.out.println("4. Transpose matrix");
             System.out.println("5. Calculate a determinant");
+            System.out.println("6. Inverse matrix");
             System.out.println("0. Exit");
             System.out.print("Your choice: ");
 
@@ -24,14 +25,12 @@ public class MatrixProcessing {
             switch (choice) {
                 case 1 -> {
                     System.out.print("Enter size of first matrix: ");
-                    int n1 = sc.nextInt();
-                    int m1 = sc.nextInt();
+                    int n1 = sc.nextInt(), m1 = sc.nextInt();
                     System.out.println("Enter first matrix:");
                     Matrix A = new Matrix(readMatrix(sc, n1, m1));
 
                     System.out.print("Enter size of second matrix: ");
-                    int n2 = sc.nextInt();
-                    int m2 = sc.nextInt();
+                    int n2 = sc.nextInt(), m2 = sc.nextInt();
                     System.out.println("Enter second matrix:");
                     Matrix B = new Matrix(readMatrix(sc, n2, m2));
 
@@ -43,8 +42,7 @@ public class MatrixProcessing {
 
                 case 2 -> {
                     System.out.print("Enter size of matrix: ");
-                    int n = sc.nextInt();
-                    int m = sc.nextInt();
+                    int n = sc.nextInt(), m = sc.nextInt();
                     System.out.println("Enter matrix:");
                     Matrix M = new Matrix(readMatrix(sc, n, m));
 
@@ -58,14 +56,12 @@ public class MatrixProcessing {
 
                 case 3 -> {
                     System.out.print("Enter size of first matrix: ");
-                    int n1 = sc.nextInt();
-                    int m1 = sc.nextInt();
+                    int n1 = sc.nextInt(), m1 = sc.nextInt();
                     System.out.println("Enter first matrix:");
                     Matrix A = new Matrix(readMatrix(sc, n1, m1));
 
                     System.out.print("Enter size of second matrix: ");
-                    int n2 = sc.nextInt();
-                    int m2 = sc.nextInt();
+                    int n2 = sc.nextInt(), m2 = sc.nextInt();
                     System.out.println("Enter second matrix:");
                     Matrix B = new Matrix(readMatrix(sc, n2, m2));
 
@@ -84,8 +80,7 @@ public class MatrixProcessing {
                     int t = sc.nextInt();
 
                     System.out.print("Enter matrix size: ");
-                    int n = sc.nextInt();
-                    int m = sc.nextInt();
+                    int n = sc.nextInt(), m = sc.nextInt();
                     System.out.println("Enter matrix:");
                     Matrix M = new Matrix(readMatrix(sc, n, m));
 
@@ -106,8 +101,7 @@ public class MatrixProcessing {
 
                 case 5 -> {
                     System.out.print("Enter matrix size: ");
-                    int n = sc.nextInt();
-                    int m = sc.nextInt();
+                    int n = sc.nextInt(), m = sc.nextInt();
                     System.out.println("Enter matrix:");
                     Matrix M = new Matrix(readMatrix(sc, n, m));
 
@@ -118,6 +112,26 @@ public class MatrixProcessing {
                         System.out.println("The result is:");
                         if (det == Math.floor(det)) System.out.println((int) det);
                         else System.out.println(det);
+                    }
+                }
+
+                case 6 -> {
+                    System.out.print("Enter matrix size: ");
+                    int n = sc.nextInt(), m = sc.nextInt();
+                    System.out.println("Enter matrix:");
+                    Matrix M = new Matrix(readMatrix(sc, n, m));
+
+                    if (n != m) {
+                        System.out.println("The operation cannot be performed.");
+                    } else {
+                        double det = M.determinant();
+                        if (det == 0) {
+                            System.out.println("This matrix doesn't have an inverse.");
+                        } else {
+                            Matrix inv = M.inverse();
+                            System.out.println("The result is:");
+                            inv.print();
+                        }
                     }
                 }
 
@@ -137,8 +151,8 @@ public class MatrixProcessing {
 }
 
 class Matrix {
-    private double[][] data;
-    private int rows, cols;
+    private final double[][] data;
+    private final int rows, cols;
 
     public Matrix(double[][] d) {
         rows = d.length;
@@ -171,7 +185,8 @@ class Matrix {
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < o.cols; j++) {
                 double s = 0;
-                for (int k = 0; k < cols; k++) s += data[i][k] * o.data[k][j];
+                for (int k = 0; k < cols; k++)
+                    s += data[i][k] * o.data[k][j];
                 r[i][j] = s;
             }
         return new Matrix(r);
@@ -235,12 +250,26 @@ class Matrix {
         return new Matrix(r);
     }
 
+    public Matrix inverse() {
+        double det = determinant();
+        if (det == 0) return null;
+
+        double[][] cof = new double[rows][cols];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                cof[i][j] = Math.pow(-1, i + j) * minor(i, j).determinant();
+
+        Matrix adj = new Matrix(cof).transposeMainDiagonal();
+        return adj.multiplyByConstant(1.0 / det);
+    }
+
     public void print() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                if (data[i][j] == Math.floor(data[i][j]))
-                    System.out.print((int) data[i][j]);
-                else System.out.print(data[i][j]);
+                double val = data[i][j];
+                val = Math.round(val * 100.0) / 100.0;
+                if (val == Math.floor(val)) System.out.print((int) val);
+                else System.out.print(val);
                 if (j < cols - 1) System.out.print(" ");
             }
             System.out.println();
