@@ -54,7 +54,7 @@ public class RockPaperScissors {
             return options[random.nextInt(options.length)];
         }
 
-        public void play(String input) {
+        public void playRound(String input) {
             Option userOption = Option.fromString(input);
             if (userOption == null) {
                 System.out.println("Invalid input");
@@ -81,6 +81,20 @@ public class RockPaperScissors {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Game game = new Game();
-        game.play(scanner.nextLine());
+
+        while (true) {
+            String input = scanner.nextLine();
+
+            if (input.equals("!exit")) {
+                System.out.println("Bye!");
+                break;
+            }
+
+            if (Option.fromString(input) != null) {
+                game.playRound(input);
+            } else {
+                System.out.println("Invalid input");
+            }
+        }
     }
 }
