@@ -1,5 +1,7 @@
 package RockPaperScissors;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -22,11 +24,31 @@ public class RockPaperScissors {
 
         public static Option fromString(String input) {
             for (Option o : Option.values()) {
-                if (o.value.equalsIgnoreCase(input)) {
-                    return o;
-                }
+                if (o.value.equalsIgnoreCase(input)) return o;
             }
             return null;
+        }
+    }
+
+    public static class Player {
+        private final String name;
+        private int rating;
+
+        public Player(String name, int rating) {
+            this.name = name;
+            this.rating = rating;
+        }
+
+        public void addWin() {
+            rating += 100;
+        }
+
+        public void addDraw() {
+            rating += 50;
+        }
+
+        public int getRating() {
+            return rating;
         }
     }
 
@@ -48,6 +70,11 @@ public class RockPaperScissors {
 
     public static class Game {
         private final Random random = new Random();
+        private final Player player;
+
+        public Game(Player player) {
+            this.player = player;
+        }
 
         private Option getRandomOption() {
             Option[] options = Option.values();
@@ -66,9 +93,11 @@ public class RockPaperScissors {
 
             switch (result) {
                 case "win":
+                    player.addWin();
                     System.out.println("Well done. The computer chose " + computerOption.getValue() + " and failed");
                     break;
                 case "draw":
+                    player.addDraw();
                     System.out.println("There is a draw (" + computerOption.getValue() + ")");
                     break;
                 case "lose":
@@ -80,7 +109,24 @@ public class RockPaperScissors {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Game game = new Game();
+
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        System.out.println("Hello, " + name);
+
+        int rating = 0;
+
+        try {
+            Scanner fileScanner = new Scanner(new File("rating.txt"));
+            while (fileScanner.hasNext()) {
+                String playerName = fileScanner.next();
+                int playerRating = fileScanner.nextInt();
+                if (playerName.equals(name)) rating = playerRating;
+            }
+        } catch (FileNotFoundException ignored) {}
+
+        Player player = new Player(name, rating);
+        Game game = new Game(player);
 
         while (true) {
             String input = scanner.nextLine();
@@ -88,6 +134,11 @@ public class RockPaperScissors {
             if (input.equals("!exit")) {
                 System.out.println("Bye!");
                 break;
+            }
+
+            if (input.equals("!rating")) {
+                System.out.println("Your rating: " + player.getRating());
+                continue;
             }
 
             if (Option.fromString(input) != null) {
