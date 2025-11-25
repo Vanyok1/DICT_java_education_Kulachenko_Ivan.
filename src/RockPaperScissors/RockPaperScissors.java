@@ -1,5 +1,6 @@
 package RockPaperScissors;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class RockPaperScissors {
@@ -30,40 +31,56 @@ public class RockPaperScissors {
     }
 
     public static class Rules {
-        public static Option getWinningOption(Option userOption) {
-            switch (userOption) {
+        public static String determineResult(Option user, Option computer) {
+            if (user == computer) return "draw";
+            switch (user) {
                 case ROCK:
-                    return Option.PAPER;
+                    return (computer == Option.SCISSORS) ? "win" : "lose";
                 case PAPER:
-                    return Option.SCISSORS;
+                    return (computer == Option.ROCK) ? "win" : "lose";
                 case SCISSORS:
-                    return Option.ROCK;
+                    return (computer == Option.PAPER) ? "win" : "lose";
                 default:
-                    return null;
+                    return "lose";
             }
         }
     }
 
     public static class Game {
+        private final Random random = new Random();
+
+        private Option getRandomOption() {
+            Option[] options = Option.values();
+            return options[random.nextInt(options.length)];
+        }
+
         public void play(String input) {
             Option userOption = Option.fromString(input);
-
             if (userOption == null) {
                 System.out.println("Invalid input");
                 return;
             }
 
-            Option winningOption = Rules.getWinningOption(userOption);
+            Option computerOption = getRandomOption();
+            String result = Rules.determineResult(userOption, computerOption);
 
-            System.out.println("Sorry, but the computer chose " + winningOption.getValue());
+            switch (result) {
+                case "win":
+                    System.out.println("Well done. The computer chose " + computerOption.getValue() + " and failed");
+                    break;
+                case "draw":
+                    System.out.println("There is a draw (" + computerOption.getValue() + ")");
+                    break;
+                case "lose":
+                    System.out.println("Sorry, but the computer chose " + computerOption.getValue());
+                    break;
+            }
         }
     }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Game game = new Game();
-
-        String userInput = scanner.nextLine();
-        game.play(userInput);
+        game.play(scanner.nextLine());
     }
 }
