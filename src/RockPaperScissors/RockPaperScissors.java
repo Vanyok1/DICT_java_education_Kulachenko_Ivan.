@@ -2,33 +2,9 @@ package RockPaperScissors;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class RockPaperScissors {
-
-    public enum Option {
-        ROCK("rock"),
-        PAPER("paper"),
-        SCISSORS("scissors");
-
-        private final String value;
-
-        Option(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public static Option fromString(String input) {
-            for (Option o : Option.values()) {
-                if (o.value.equalsIgnoreCase(input)) return o;
-            }
-            return null;
-        }
-    }
 
     public static class Player {
         private final String name;
@@ -53,55 +29,65 @@ public class RockPaperScissors {
     }
 
     public static class Rules {
-        public static String determineResult(Option user, Option computer) {
-            if (user == computer) return "draw";
-            switch (user) {
-                case ROCK:
-                    return (computer == Option.SCISSORS) ? "win" : "lose";
-                case PAPER:
-                    return (computer == Option.ROCK) ? "win" : "lose";
-                case SCISSORS:
-                    return (computer == Option.PAPER) ? "win" : "lose";
-                default:
-                    return "lose";
-            }
+        private final List<String> options;
+
+        public Rules(List<String> options) {
+            this.options = options;
+        }
+
+        public String getResult(String user, String computer) {
+            if (user.equals(computer)) return "draw";
+
+            int index = options.indexOf(user);
+            List<String> shifted = new ArrayList<>();
+            shifted.addAll(options.subList(index + 1, options.size()));
+            shifted.addAll(options.subList(0, index));
+
+            int half = shifted.size() / 2;
+            List<String> loseTo = shifted.subList(0, half);
+            List<String> winAgainst = shifted.subList(half, shifted.size());
+
+            if (loseTo.contains(computer)) return "lose";
+            else return "win";
         }
     }
 
     public static class Game {
         private final Random random = new Random();
         private final Player player;
+        private final Rules rules;
+        private final List<String> options;
 
-        public Game(Player player) {
+        public Game(Player player, List<String> options) {
             this.player = player;
+            this.options = options;
+            this.rules = new Rules(options);
         }
 
-        private Option getRandomOption() {
-            Option[] options = Option.values();
-            return options[random.nextInt(options.length)];
+        private String getRandomOption() {
+            return options.get(random.nextInt(options.size()));
         }
 
         public void playRound(String input) {
-            Option userOption = Option.fromString(input);
-            if (userOption == null) {
+            if (!options.contains(input)) {
                 System.out.println("Invalid input");
                 return;
             }
 
-            Option computerOption = getRandomOption();
-            String result = Rules.determineResult(userOption, computerOption);
+            String computer = getRandomOption();
+            String result = rules.getResult(input, computer);
 
             switch (result) {
                 case "win":
                     player.addWin();
-                    System.out.println("Well done. The computer chose " + computerOption.getValue() + " and failed");
+                    System.out.println("Well done. The computer chose " + computer + " and failed");
                     break;
                 case "draw":
                     player.addDraw();
-                    System.out.println("There is a draw (" + computerOption.getValue() + ")");
+                    System.out.println("There is a draw (" + computer + ")");
                     break;
                 case "lose":
-                    System.out.println("Sorry, but the computer chose " + computerOption.getValue());
+                    System.out.println("Sorry, but the computer chose " + computer);
                     break;
             }
         }
@@ -125,8 +111,22 @@ public class RockPaperScissors {
             }
         } catch (FileNotFoundException ignored) {}
 
+        String optionsInput = scanner.nextLine();
+
+        List<String> options;
+        if (optionsInput.isEmpty()) {
+            options = Arrays.asList("rock", "paper", "scissors");
+        } else {
+            options = Arrays.asList(optionsInput.split(","));
+            for (int i = 0; i < options.size(); i++) {
+                options.set(i, options.get(i).trim());
+            }
+        }
+
+        System.out.println("Okay, let's start");
+
         Player player = new Player(name, rating);
-        Game game = new Game(player);
+        Game game = new Game(player, options);
 
         while (true) {
             String input = scanner.nextLine();
@@ -141,11 +141,7 @@ public class RockPaperScissors {
                 continue;
             }
 
-            if (Option.fromString(input) != null) {
-                game.playRound(input);
-            } else {
-                System.out.println("Invalid input");
-            }
+            game.playRound(input);
         }
     }
 }
